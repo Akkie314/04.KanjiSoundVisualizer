@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // 最初と最後だけ固定
             if (newV === startV) {
                 alpha = 1.0;
-                fontSize = 16;
+                fontSize = fontSizeMin * 2;
             } else {
                 // 途中はvに応じて変化
                 alpha = getAlpha(newV);
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // alphaとフォントサイズを設定
             ctx.fillStyle = `rgba(238, 238, 238, ${alpha})`;
-            ctx.font = `${fontSize}px Arial`;
+            ctx.font = `${fontSize}px "Noto Sans JP"`;
 
             // 漢字を描画
             ctx.fillText(getRandomKanjiFromPool(), x, y);
