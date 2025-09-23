@@ -1,15 +1,31 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <title>Audio Visualizer</title>
+    <title>Kanji Sound Visualizer</title>
 </head>
+
 <body>
-    <audio src="./happytime.mp3" controls preload="auto"></audio>
+    <header>
+        <h1>Kanji Sound Visualizer</h1>
+        <div class="links">
+            <a href="https://x.com/Aki_31415926" target="_blank">Twitter</a>
+            <a href="https://github.com/Akkie314/04.KanjiSoundVisualizer" target="_blank">Github</a>
+        </div>
+    </header>
+
+    <div class="copy-right">&copy; 2025 Akkie314</div>
+
+    <audio src="./happytime.mp3" controlslist="nodownload" controls preload="auto"></audio>
     <canvas id="visualizer"></canvas>
 
     <script src="main.js"></script>
 </body>
+
 </html>
