@@ -4,8 +4,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     const alphaMax = 1;
 
     const fontSizeMin = 8;
-    const fontSizeMax = 64;
+    const fontSizeMax = isMobile() ? 32 : 64;
 
+    const kanjiPool = generateKanjiPool(1000);
+
+    let spacing; // 漢字の間隔倍率
+
+    function isMobile() {
+        // 画面サイズが480px以下ならモバイルとみなす
+        return window.innerWidth <= 480;
+    }
 
     // キャンバスのセットアップ
     const canvas = document.getElementById("visualizer");
@@ -15,6 +23,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        // デバイスによってspacingを設定
+        if (isMobile()) {
+            spacing = 4.0; // スマホでは狭く
+        } else {
+            spacing = 2.0; // PCではデフォルト
+        }
     }
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
@@ -73,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // 漢字を描画
-        const sliceWidth = (canvas.width * 1.0) / bufferLength;
+        const sliceWidth = (canvas.width * spacing) / bufferLength;
         let x = 0;
 
         for (let i = 0; i < bufferLength; i++) {
@@ -95,7 +109,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // startV -> 1.0 の間を0.05刻みでループする（v = 1.0を境に対象なので）
         const startV = Math.min(v, flippedV);
         for (let newV = startV; newV < 1.0 + 0.01; newV += 0.05) {
-            const y = (newV * canvas.height) / 2;
+            const y = (canvas.height / 4) * (newV + 1);
             const flippedY = canvas.height - y;
             let alpha = 1.0;
             let fontSize = 16;
@@ -115,8 +129,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             ctx.font = `${fontSize}px Arial`;
 
             // 漢字を描画
-            ctx.fillText(getRandomKanji(), x, y);
-            ctx.fillText(getRandomKanji(), x, flippedY);
+            ctx.fillText(getRandomKanjiFromPool(), x, y);
+            ctx.fillText(getRandomKanjiFromPool(), x, flippedY);
         }
     }
 
@@ -128,6 +142,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 文字のサイズを取得
     function getFontSize(v) {
         return fontSizeMin + (fontSizeMax - fontSizeMin) * Math.abs(v - 1.0);
+    }
+
+    // ランダムな漢字を大量に用意する関数
+    function generateKanjiPool(count) {
+        const kanjiPool = [];
+        for (let i = 0; i < count; i++) {
+            kanjiPool.push(getRandomKanji());
+        }
+        return kanjiPool;
+    }
+
+    // プールからランダムに漢字を取得する関数
+    function getRandomKanjiFromPool() {
+        const index = Math.floor(Math.random() * kanjiPool.length);
+        return kanjiPool[index];
     }
 
     // ランダムな漢字を1つ返す関数
