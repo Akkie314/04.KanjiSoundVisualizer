@@ -4,10 +4,12 @@
 }
 
 body {
-    font-family: "Outfit", sans-serif;
+    font-family: "Noto Sans JP", "Outfit", sans-serif;
     font-optical-sizing: auto;
     font-weight: 300;
     font-style: normal;
+
+    overscroll-behavior: none;
 }
 
 header {
@@ -22,10 +24,22 @@ header {
     padding: 0 1rem;
 }
 
+div.work-info {
+    max-width: 50%;
+}
+
 h1 {
-    font-size: 1.5rem;
+    font-size: clamp(1rem, 0.5rem + 1.6667vw, 1.5rem);
     color: #fff;
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+div.work-info p {
+    height: 0;
+    font-family: "Noto Sans JP", "sans-serif";
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-top: 0.25rem;
 }
 
 div.links {
@@ -34,24 +48,14 @@ div.links {
 }
 
 div.links a {
-    margin-top: 0.5rem;
-
     color: #aaa;
-    font-size: 1rem;
+    font-size: clamp(0.75rem, 0.5rem + 0.8333vw, 1rem);
     transition: color 0.15s;
 }
 div.links a:hover {
     color: #fff;
 }
 
-div.copy-right {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-
-    color: #808080;
-    font-size: 0.75rem;
-}
 
 audio {
     position: absolute;
@@ -64,6 +68,6 @@ audio {
 canvas#visualizer {
     display: block;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     background-color: #222;
 }
