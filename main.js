@@ -19,58 +19,72 @@ document.addEventListener("DOMContentLoaded", async () => {
     const canvas = document.getElementById("visualizer");
     const ctx = canvas.getContext("2d");
 
-    // キャンバスのサイズをウィンドウに合わせる
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        // デバイスによってspacingを設定
-        if (isMobile()) {
-            spacing = 4.0; // スマホでは狭く
-        } else {
-            spacing = 2.0; // PCではデフォルト
+    // オーディオ系変数を先に宣言しておく
+    let audioCtx;
+    let analyser;
+    let audioElement = document.querySelector("audio");
+    let bufferLength;
+    let dataArray;
+
+    // オーディオ系の初期化
+    async function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 128;
+
+            // ソースを生成
+            const source = audioCtx.createMediaElementSource(audioElement);
+
+            // 接続
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
+
+            // dataArray を初期化
+            bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+
+            analyser.getByteTimeDomainData(dataArray);
         }
-    }
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
 
-    // コンテキストとアナライザを作成
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const analyser = audioCtx.createAnalyser();
-
-    // アナライザの設定
-    analyser.fftSize = 128;
-
-    // ソースを生成
-    const audioElement = document.querySelector("audio");
-
-    // オーディオが再生可能になったらアナライザを設定
-    audioElement.addEventListener('canplay', () => {
-        const source = audioCtx.createMediaElementSource(audioElement);
-        
-        // 接続
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-    });
-    
-    // オーディオ再生時にAudioContextをresume
-    audioElement.addEventListener('play', async () => {
         if (audioCtx.state === 'suspended') {
             await audioCtx.resume();
         }
-    });
-    
-    
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
+    }
 
-    analyser.getByteTimeDomainData(dataArray);
+    // キャンバスのサイズをウィンドウに合わせる
+    async function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
+
+        if (isMobile()) {
+            spacing = 4.0; // スマホ
+        } else {
+            spacing = 2.0; // PC
+        }
+    }
+
+    // イベントの登録
+    window.addEventListener("resize", resizeCanvas);
+    if (audioElement) {
+        audioElement.addEventListener("play", initAudio, { once: true });
+    }
+
+    resizeCanvas();
     draw();
+
 
     // 描画用関数
     function draw() {
+        // analyserがなければ、何もしない
+        if (!analyser) {
+            requestAnimationFrame(draw);
+            return;
+        }
+
         // 音声停止中なら、何もしない
-        if (audioElement.paused) {
+        if (!audioElement || audioElement.paused) {
             setTimeout(() => {
                 draw();
             }, 50);
@@ -92,12 +106,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         for (let i = 0; i < bufferLength; i++) {
             const v = dataArray[i] / 128.0;
-
             drawKanji(x, v)
 
             x += sliceWidth;
         }
-
 
         requestAnimationFrame(draw);
     }
@@ -106,16 +118,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     function drawKanji(x, v) {
         const flippedV = 2.0 - v;   // 上下反転したv
 
-        // startV -> 1.0 の間を0.05刻みでループする（v = 1.0を境に対象なので）
+        // startV -> 1.0 の間を1/3ずつ分割して3回描画
         const startV = Math.min(v, flippedV);
-        for (let newV = startV; newV < 1.0 + 0.01; newV += 0.05) {
+        for (let iter = 0, newV = startV; iter < 3 && newV < 1.0 + 0.01; newV += (1.0 - startV) / 3, iter++) {
             const y = (canvas.height / 4) * (newV + 1);
             const flippedY = canvas.height - y;
             let alpha = 1.0;
             let fontSize = 16;
 
             // 最初と最後だけ固定
-            if (newV === startV) {
+            if (iter === 0) {
                 alpha = 1.0;
                 fontSize = fontSizeMin * 2;
             } else {
