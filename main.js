@@ -97,7 +97,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         for (let newV = startV; newV < 1.0 + 0.01; newV += 0.05) {
             const y = (newV * canvas.height) / 2;
             const flippedY = canvas.height - y;
-            const kanji = getRandomKanji();
             let alpha = 1.0;
             let fontSize = 16;
 
@@ -116,8 +115,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             ctx.font = `${fontSize}px Arial`;
 
             // 漢字を描画
-            ctx.fillText(kanji, x, y);
-            ctx.fillText(kanji, x, flippedY);
+            ctx.fillText(getRandomKanji(), x, y);
+            ctx.fillText(getRandomKanji(), x, flippedY);
         }
     }
 
