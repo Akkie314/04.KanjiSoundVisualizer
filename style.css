@@ -3,6 +3,10 @@
     padding: 0;
 }
 
+:root {
+    font-size: clamp(0.75rem, 0.5rem + 0.8333vw, 1rem);
+}
+
 body {
     font-family: "Noto Sans JP", "Outfit", sans-serif;
     font-optical-sizing: auto;
@@ -25,11 +29,11 @@ header {
 }
 
 div.work-info {
-    max-width: 50%;
+    max-width: 60%;
 }
 
 h1 {
-    font-size: clamp(1rem, 0.5rem + 1.6667vw, 1.5rem);
+    font-size: 1.5rem;
     color: #fff;
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
@@ -49,7 +53,7 @@ div.links {
 
 div.links a {
     color: #aaa;
-    font-size: clamp(0.75rem, 0.5rem + 0.8333vw, 1rem);
+    font-size: 0.75rem;
     transition: color 0.15s;
 }
 div.links a:hover {
